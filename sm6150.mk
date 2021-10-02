@@ -1,11 +1,61 @@
+###########
+#QMAA flags starts
+###########
+#QMAA global flag for modular architecture
+#true means QMAA is enabled for system
+#false means QMAA is disabled for system
+
+TARGET_USES_QMAA := true
+#QMAA tech team flag to override global QMAA per tech team
+#true means overriding global QMAA for this tech area
+#false means using global, no override
+TARGET_USES_QMAA_OVERRIDE_RPMB    := false
+TARGET_USES_QMAA_OVERRIDE_DISPLAY := true
+TARGET_USES_QMAA_OVERRIDE_AUDIO   := true
+TARGET_USES_QMAA_OVERRIDE_VIDEO   := false
+TARGET_USES_QMAA_OVERRIDE_CAMERA  := false
+TARGET_USES_QMAA_OVERRIDE_GFX     := true
+TARGET_USES_QMAA_OVERRIDE_WFD     := true
+TARGET_USES_QMAA_OVERRIDE_GPS     := false
+TARGET_USES_QMAA_OVERRIDE_ANDROID_RECOVERY := true
+TARGET_USES_QMAA_OVERRIDE_ANDROID_CORE := true
+TARGET_USES_QMAA_OVERRIDE_WLAN    := true
+TARGET_USES_QMAA_OVERRIDE_DPM     := false
+TARGET_USES_QMAA_OVERRIDE_BLUETOOTH := true
+TARGET_USES_QMAA_OVERRIDE_FM      := true
+TARGET_USES_QMAA_OVERRIDE_CVP     := true
+TARGET_USES_QMAA_OVERRIDE_FASTCV  := true
+TARGET_USES_QMAA_OVERRIDE_SCVE    := true
+TARGET_USES_QMAA_OVERRIDE_OPENVX  := true
+TARGET_USES_QMAA_OVERRIDE_DIAG    := true
+TARGET_USES_QMAA_OVERRIDE_FTM     := true
+TARGET_USES_QMAA_OVERRIDE_DATA    := true
+TARGET_USES_QMAA_OVERRIDE_DATA_NET := true
+TARGET_USES_QMAA_OVERRIDE_MSM_BUS_MODULE := true
+TARGET_USES_QMAA_OVERRIDE_KERNEL_TESTS_INTERNAL := true
+TARGET_USES_QMAA_OVERRIDE_MSMIRQBALANCE := true
+TARGET_USES_QMAA_OVERRIDE_VIBRATOR := true
+TARGET_USES_QMAA_OVERRIDE_DRM     := true
+TARGET_USES_QMAA_OVERRIDE_KMGK    := false
+TARGET_USES_QMAA_OVERRIDE_VPP     := true
+TARGET_USES_QMAA_OVERRIDE_GP      := true
+TARGET_USES_QMAA_OVERRIDE_SPCOM_UTEST := false
+TARGET_USES_QMAA_OVERRIDE_PERF    := true
+
+#Full QMAA HAL List
+QMAA_HAL_LIST := audio video camera display sensors gps
+
+###########
+#QMAA flags ends
+
 # Default A/B configuration.
 ENABLE_AB ?= true
 
 # For QSSI builds, we skip building the system image. Instead we build the
 # "non-system" images (that we support).
-PRODUCT_BUILD_SYSTEM_IMAGE := false
+PRODUCT_BUILD_SYSTEM_IMAGE := true
 PRODUCT_BUILD_SYSTEM_OTHER_IMAGE := false
-PRODUCT_BUILD_VENDOR_IMAGE := true
+PRODUCT_BUILD_VENDOR_IMAGE := false
 PRODUCT_BUILD_PRODUCT_IMAGE := false
 PRODUCT_BUILD_PRODUCT_SERVICES_IMAGE := false
 PRODUCT_BUILD_ODM_IMAGE := false
@@ -73,9 +123,12 @@ BOARD_AVB_SYSTEM_ROLLBACK_INDEX := 0
 BOARD_AVB_SYSTEM_ROLLBACK_INDEX_LOCATION := 2
 else
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
+BOARD_BUILD_SUPER_IMAGE_BY_DEFAULT := true
+PRODUCT_BUILD_SUPER_PARTITION := true
 PRODUCT_PACKAGES += fastbootd
-# Add default implementation of fastboot HAL.
-PRODUCT_PACKAGES += android.hardware.fastboot@1.0-impl-mock
+# Mismatch in the uses-library tags between build system and the manifest leads
+# to soong APK manifest_check tool errors. Enable the flag to fix this.
+RELAX_USES_LIBRARY_CHECK := true
 ifeq ($(ENABLE_AB), true)
 PRODUCT_COPY_FILES += $(LOCAL_PATH)/default/fstab_AB_dynamic_partition.qti:$(TARGET_COPY_OUT_RAMDISK)/fstab.default
 PRODUCT_COPY_FILES += $(LOCAL_PATH)/emmc/fstab_AB_dynamic_partition.qti:$(TARGET_COPY_OUT_RAMDISK)/fstab.emmc
@@ -88,7 +141,6 @@ BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
 BOARD_AVB_VBMETA_SYSTEM_ALGORITHM := SHA256_RSA2048
 BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
 BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX_LOCATION := 2
-$(call inherit-product, build/make/target/product/gsi_keys.mk)
 endif
 
 # privapp-permissions whitelisting (To Fix CTS :privappPermissionsMustBeEnforced)
@@ -97,7 +149,7 @@ PRODUCT_PROPERTY_OVERRIDES += ro.control_privapp_permissions=enforce
 #target name, shall be used in all makefiles
 MSMSTEPPE = sm6150
 TARGET_DEFINES_DALVIK_HEAP := true
-$(call inherit-product, device/qcom/vendor-common/common64.mk)
+$(call inherit-product, device/qcom/common/common64.mk)
 
 #Inherit all except heap growth limit from phone-xhdpi-2048-dalvik-heap.mk
 PRODUCT_PROPERTY_OVERRIDES  += \
@@ -112,9 +164,22 @@ PRODUCT_BRAND := qti
 PRODUCT_MODEL := $(MSMSTEPPE) for arm64
 
 #Initial bringup flags
-TARGET_USES_AOSP := false
-TARGET_USES_AOSP_FOR_AUDIO := false
+TARGET_USES_AOSP := true
+TARGET_USES_AOSP_FOR_AUDIO := true
 TARGET_USES_QCOM_BSP := false
+TARGET_BOARD_AUTO := true
+TARGET_NO_TELEPHONY := true
+TARGET_USES_QTIC := false
+TARGET_USES_QTIC_EXTENSION := false
+ENABLE_HYP := false
+BOARD_HAS_QCOM_WLAN := true
+TARGET_NO_QTI_WFD := true
+BOARD_HAVE_QCOM_FM := false
+BOARD_VENDOR_QCOM_LOC_PDK_FEATURE_SET := false
+TARGET_USES_AOSP_FOR_WLAN := true
+TARGET_FWK_SUPPORTS_FULL_VALUEADDS := false
+ALLOW_MISSING_DEPENDENCIES := true
+BOARD_USES_DPM := false
 
 ifeq ($(TARGET_FWK_SUPPORTS_FULL_VALUEADDS),true)
   $(warning "Compiling with full value-added framework")
@@ -123,10 +188,20 @@ else
   GENERIC_ODM_IMAGE := true
 endif
 
-# RRO configuration
-TARGET_USES_RRO := true
+#Default vendor image configuration
+ifeq ($(ENABLE_VENDOR_IMAGE),)
+ENABLE_VENDOR_IMAGE := false
+endif
 
-TARGET_KERNEL_VERSION := 4.14
+TARGET_KERNEL_VERSION := 5.4
+TARGET_HAS_GENERIC_KERNEL_HEADERS := true
+
+#Enable llvm support for kernel
+KERNEL_LLVM_SUPPORT := true
+
+#Enable sd-llvm suppport for kernel
+KERNEL_SD_LLVM_SUPPORT := false
+
 # default is nosdcard, S/W button enabled in resource
 PRODUCT_CHARACTERISTICS := nosdcard
 BOARD_FRP_PARTITION_NAME := frp
@@ -144,7 +219,8 @@ PRODUCT_PACKAGES += libGLES_android
 
 PRODUCT_BOOT_JARS += tcmiface
 
-TARGET_ENABLE_QC_AV_ENHANCEMENTS := true
+TARGET_ENABLE_QC_AV_ENHANCEMENTS := false
+TARGET_FWK_SUPPORTS_AV_VALUEADDS := false
 
 TARGET_DISABLE_QTI_VPP := true
 
@@ -194,6 +270,7 @@ ifeq ($(ENABLE_AB), true)
 PRODUCT_PACKAGES += update_engine \
     update_engine_client \
     update_verifier \
+    bootctrl.$(MSMSTEPPE) \
     android.hardware.boot@1.1-impl-qti \
     android.hardware.boot@1.1-impl-qti.recovery \
     android.hardware.boot@1.1-service
@@ -240,10 +317,6 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.software.midi.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.midi.xml
 
 PRODUCT_RESTRICT_VENDOR_FILES := false
-
-# USB default HAL
-PRODUCT_PACKAGES += \
-    android.hardware.usb@1.0-service
 
 # Kernel modules install path
 KERNEL_MODULES_INSTALL := dlkm
@@ -301,21 +374,11 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Enable incremental FS feature
 PRODUCT_PROPERTY_OVERRIDES += ro.incremental.enable=1
 
-ODM_MANIFEST_FILES += device/qcom/$(MSMSTEPPE)/manifest_365.xml
-ODM_MANIFEST_FILES += device/qcom/$(MSMSTEPPE)/manifest_366.xml
-
-#Enable Light AIDL HAL
-PRODUCT_PACKAGES += android.hardware.lights-service.qti
-
 ifneq ($(GENERIC_ODM_IMAGE),true)
    ODM_MANIFEST_FILES += device/qcom/$(MSMSTEPPE)/manifest-qva.xml
 else
    ODM_MANIFEST_FILES += device/qcom/$(MSMSTEPPE)/manifest-generic.xml
 endif
-
-# Target specific Netflix custom property
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.netflix.bsp_rev=Q6150-17263-1
 
 ###################################################################################
 # This is the End of target.mk file.

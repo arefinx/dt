@@ -122,7 +122,7 @@ else
     endif
 BOARD_SUPER_PARTITION_GROUPS := qti_dynamic_partitions
 BOARD_QTI_DYNAMIC_PARTITIONS_SIZE := 6438256640
-BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := vendor
+BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := system vendor
 BOARD_EXT4_SHARE_DUP_BLOCKS := true
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 0x06000000
 endif
@@ -151,49 +151,65 @@ BOARD_DTBOIMG_PARTITION_SIZE := 0x0800000
 BOARD_PERSISTIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_FLASH_BLOCK_SIZE := 131072 # (BOARD_KERNEL_PAGESIZE * 64)
 
-TARGET_KERNEL_VERSION := 4.14
 BOARD_PREBUILT_DTBOIMAGE := out/target/product/sm6150/prebuilt_dtbo.img
-BOARD_VENDOR_KERNEL_MODULES := \
-    $(KERNEL_MODULES_OUT)/audio_apr.ko \
-    $(KERNEL_MODULES_OUT)/audio_snd_event.ko \
-    $(KERNEL_MODULES_OUT)/audio_wglink.ko \
-    $(KERNEL_MODULES_OUT)/audio_q6_pdr.ko \
-    $(KERNEL_MODULES_OUT)/audio_q6_notifier.ko \
-    $(KERNEL_MODULES_OUT)/audio_adsp_loader.ko \
-    $(KERNEL_MODULES_OUT)/audio_q6.ko \
-    $(KERNEL_MODULES_OUT)/audio_usf.ko \
-    $(KERNEL_MODULES_OUT)/audio_pinctrl_wcd.ko \
-    $(KERNEL_MODULES_OUT)/audio_pinctrl_lpi.ko \
-    $(KERNEL_MODULES_OUT)/audio_swr.ko \
-    $(KERNEL_MODULES_OUT)/audio_wcd_core.ko \
-    $(KERNEL_MODULES_OUT)/audio_swr_ctrl.ko \
-    $(KERNEL_MODULES_OUT)/audio_wsa881x.ko \
-    $(KERNEL_MODULES_OUT)/audio_platform.ko \
-    $(KERNEL_MODULES_OUT)/audio_hdmi.ko \
-    $(KERNEL_MODULES_OUT)/audio_stub.ko \
-    $(KERNEL_MODULES_OUT)/audio_wcd9xxx.ko \
-    $(KERNEL_MODULES_OUT)/audio_mbhc.ko \
-    $(KERNEL_MODULES_OUT)/audio_wcd934x.ko \
-    $(KERNEL_MODULES_OUT)/audio_wcd937x.ko \
-    $(KERNEL_MODULES_OUT)/audio_wcd937x_slave.ko \
-    $(KERNEL_MODULES_OUT)/audio_bolero_cdc.ko \
-    $(KERNEL_MODULES_OUT)/audio_wsa_macro.ko \
-    $(KERNEL_MODULES_OUT)/audio_va_macro.ko \
-    $(KERNEL_MODULES_OUT)/audio_rx_macro.ko \
-    $(KERNEL_MODULES_OUT)/audio_tx_macro.ko \
-    $(KERNEL_MODULES_OUT)/audio_wcd_spi.ko \
-    $(KERNEL_MODULES_OUT)/audio_native.ko \
-    $(KERNEL_MODULES_OUT)/audio_machine_talos.ko \
-    $(KERNEL_MODULES_OUT)/wil6210.ko \
-    $(KERNEL_MODULES_OUT)/msm_11ad_proxy.ko \
-    $(KERNEL_MODULES_OUT)/mpq-adapter.ko \
-    $(KERNEL_MODULES_OUT)/mpq-dmx-hw-plugin.ko
-
-# install lkdtm only for userdebug and eng build variants
-ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
-    ifeq (,$(findstring perf_defconfig, $(KERNEL_DEFCONFIG)))
-        BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/lkdtm.ko
+#----------------------------------------------------------------------
+# Compile Linux Kernel
+#----------------------------------------------------------------------
+ifeq ($(KERNEL_DEFCONFIG),)
+    ifeq ($(TARGET_BUILD_VARIANT),user)
+        KERNEL_DEFCONFIG := vendor/sm6150-qgki_defconfig
+    else
+        KERNEL_DEFCONFIG := vendor/sm6150-qgki-debug_defconfig
     endif
+endif
+
+ifeq "$(KERNEL_DEFCONFIG)" "vendor/$(TARGET_BOARD_PLATFORM)-qgki_defconfig"
+BOARD_KERNEL_BINARIES := kernel kernel-gki
+endif
+
+ifeq (,$(findstring -qgki-debug_defconfig,$(KERNEL_DEFCONFIG)))
+$(warning #### GKI config ####)
+VENDOR_RAMDISK_KERNEL_MODULES := proxy-consumer.ko \
+				rpmh-regulator.ko \
+				refgen.ko \
+				stub-regulator.ko \
+                                clk-dummy.ko \
+				clk-qcom.ko \
+				clk-rpmh.ko \
+				gcc-sm6150.ko \
+				qnoc-qos.ko \
+				qnoc-sm6150.ko \
+				cmd-db.ko \
+				qcom_rpmh.ko \
+				rpmhpd.ko \
+				icc-bcm-voter.ko \
+				icc-rpmh.ko \
+				pinctrl-msm.ko \
+				pinctrl-sm6150.ko \
+				_qcom_scm.ko \
+				secure_buffer.ko \
+				iommu-logger.ko \
+				qcom-arm-smmu-mod.ko \
+				phy-qcom-ufs.ko \
+				phy-qcom-ufs-qmp-v3.ko \
+				phy-qcom-ufs-qmp-v3-660.ko \
+				ufshcd-crypto-qti.ko \
+				crypto-qti-common.ko \
+				crypto-qti-hwkm.ko \
+				hwkm.ko \
+				ufs-qcom.ko \
+				qbt_handler.ko \
+				qcom_watchdog.ko \
+				qcom-pdc.ko \
+				qpnp-power-on.ko \
+				msm-poweroff.ko \
+				sdhci-msm.ko \
+				cqhci.ko \
+				cqhci-crypto.ko \
+				cqhci-crypto-qti.ko \
+				memory_dump_v2.ko
+else
+$(warning #### QGKI config ####)
 endif
 
 BOARD_DO_NOT_STRIP_VENDOR_MODULES := true
@@ -214,6 +230,11 @@ TARGET_KERNEL_ARCH := arm64
 TARGET_KERNEL_HEADER_ARCH := arm64
 TARGET_KERNEL_CROSS_COMPILE_PREFIX := $(shell pwd)/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-androidkernel-
 TARGET_USES_UNCOMPRESSED_KERNEL := false
+
+KERN_PATH := kernel/msm-5.4/
+$(shell rm $(KERN_PATH)gen_headers_arm64.bp $(KERN_PATH)gen_headers_arm.bp)
+$(shell ln $(KERN_PATH)gen_headers_arm64_auto.bp $(KERN_PATH)gen_headers_arm64.bp)
+$(shell ln $(KERN_PATH)gen_headers_arm_auto.bp $(KERN_PATH)gen_headers_arm.bp)
 
 MAX_EGL_CACHE_KEY_SIZE := 12*1024
 MAX_EGL_CACHE_SIZE := 2048*1024
@@ -264,6 +285,12 @@ ifeq ($(ENABLE_VENDOR_IMAGE), false)
 $(error "Vendor Image is mandatory !!")
 endif
 
+#namespace definition for librecovery_updater
+#differentiate legacy 'sg' or 'bsg' framework
+SOONG_CONFIG_NAMESPACES += ufsbsg
+SOONG_CONFIG_ufsbsg += ufsframework
+SOONG_CONFIG_ufsbsg_ufsframework := bsg
+
 #----------------------------------------------------------------------
 # wlan specific
 #----------------------------------------------------------------------
@@ -277,7 +304,6 @@ BUILD_BROKEN_DUP_RULES := true
 BUILD_BROKEN_NINJA_USES_ENV_VARS := SDCLANG_AE_CONFIG SDCLANG_CONFIG SDCLANG_SA_ENABLED SDCLANG_CONFIG_AOSP
 BUILD_BROKEN_NINJA_USES_ENV_VARS += TEMPORARY_DISABLE_PATH_RESTRICTIONS
 BUILD_BROKEN_NINJA_USES_ENV_VARS += RTIC_MPGEN
-include device/qcom/sepolicy_vndr/SEPolicy.mk
 BUILD_BROKEN_PREBUILT_ELF_FILES := true
 BUILD_BROKEN_USES_BUILD_HOST_SHARED_LIBRARY := true
 BUILD_BROKEN_USES_BUILD_HOST_STATIC_LIBRARY := true
