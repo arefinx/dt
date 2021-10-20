@@ -11,11 +11,11 @@ TARGET_USES_QMAA := true
 #false means using global, no override
 TARGET_USES_QMAA_OVERRIDE_RPMB    := false
 TARGET_USES_QMAA_OVERRIDE_DISPLAY := true
-TARGET_USES_QMAA_OVERRIDE_AUDIO   := true
+TARGET_USES_QMAA_OVERRIDE_AUDIO   := false
 TARGET_USES_QMAA_OVERRIDE_VIDEO   := false
 TARGET_USES_QMAA_OVERRIDE_CAMERA  := false
-TARGET_USES_QMAA_OVERRIDE_GFX     := true
-TARGET_USES_QMAA_OVERRIDE_WFD     := true
+TARGET_USES_QMAA_OVERRIDE_GFX     := false
+TARGET_USES_QMAA_OVERRIDE_WFD     := false
 TARGET_USES_QMAA_OVERRIDE_GPS     := false
 TARGET_USES_QMAA_OVERRIDE_ANDROID_RECOVERY := true
 TARGET_USES_QMAA_OVERRIDE_ANDROID_CORE := true
@@ -23,8 +23,8 @@ TARGET_USES_QMAA_OVERRIDE_WLAN    := true
 TARGET_USES_QMAA_OVERRIDE_DPM     := false
 TARGET_USES_QMAA_OVERRIDE_BLUETOOTH := true
 TARGET_USES_QMAA_OVERRIDE_FM      := true
-TARGET_USES_QMAA_OVERRIDE_CVP     := true
-TARGET_USES_QMAA_OVERRIDE_FASTCV  := true
+TARGET_USES_QMAA_OVERRIDE_CVP     := false
+TARGET_USES_QMAA_OVERRIDE_FASTCV  := false
 TARGET_USES_QMAA_OVERRIDE_SCVE    := true
 TARGET_USES_QMAA_OVERRIDE_OPENVX  := true
 TARGET_USES_QMAA_OVERRIDE_DIAG    := true
@@ -35,9 +35,10 @@ TARGET_USES_QMAA_OVERRIDE_MSM_BUS_MODULE := true
 TARGET_USES_QMAA_OVERRIDE_KERNEL_TESTS_INTERNAL := true
 TARGET_USES_QMAA_OVERRIDE_MSMIRQBALANCE := true
 TARGET_USES_QMAA_OVERRIDE_VIBRATOR := true
-TARGET_USES_QMAA_OVERRIDE_DRM     := true
-TARGET_USES_QMAA_OVERRIDE_KMGK    := false
-TARGET_USES_QMAA_OVERRIDE_VPP     := true
+TARGET_USES_QMAA_OVERRIDE_DRM     := false
+TARGET_USES_QMAA_OVERRIDE_KMGK    := true
+TARGET_USES_QMAA_OVERRIDE_CRYPTFSHW := true
+TARGET_USES_QMAA_OVERRIDE_VPP     := false
 TARGET_USES_QMAA_OVERRIDE_GP      := true
 TARGET_USES_QMAA_OVERRIDE_SPCOM_UTEST := false
 TARGET_USES_QMAA_OVERRIDE_PERF    := true
@@ -55,9 +56,10 @@ ENABLE_AB ?= true
 # "non-system" images (that we support).
 PRODUCT_BUILD_SYSTEM_IMAGE := true
 PRODUCT_BUILD_SYSTEM_OTHER_IMAGE := false
-PRODUCT_BUILD_VENDOR_IMAGE := false
-PRODUCT_BUILD_PRODUCT_IMAGE := false
-PRODUCT_BUILD_PRODUCT_SERVICES_IMAGE := false
+PRODUCT_BUILD_SYSTEM_EXT_IMAGE := true
+PRODUCT_BUILD_VENDOR_IMAGE := true
+PRODUCT_BUILD_PRODUCT_IMAGE := true
+#PRODUCT_BUILD_PRODUCT_SERVICES_IMAGE := false
 PRODUCT_BUILD_ODM_IMAGE := false
 ifeq ($(ENABLE_AB), true)
 PRODUCT_BUILD_CACHE_IMAGE := false
@@ -126,6 +128,7 @@ PRODUCT_USE_DYNAMIC_PARTITIONS := true
 BOARD_BUILD_SUPER_IMAGE_BY_DEFAULT := true
 PRODUCT_BUILD_SUPER_PARTITION := true
 PRODUCT_PACKAGES += fastbootd
+
 # Mismatch in the uses-library tags between build system and the manifest leads
 # to soong APK manifest_check tool errors. Enable the flag to fix this.
 RELAX_USES_LIBRARY_CHECK := true
@@ -136,7 +139,8 @@ else
 PRODUCT_COPY_FILES += $(LOCAL_PATH)/default/fstab_non_AB_dynamic_partition.qti:$(TARGET_COPY_OUT_RAMDISK)/fstab.default
 PRODUCT_COPY_FILES += $(LOCAL_PATH)/emmc/fstab_non_AB_dynamic_partition.qti:$(TARGET_COPY_OUT_RAMDISK)/fstab.emmc
 endif
-BOARD_AVB_VBMETA_SYSTEM := system
+#BOARD_AVB_VBMETA_SYSTEM := system
+BOARD_AVB_VBMETA_SYSTEM := system system_ext product
 BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
 BOARD_AVB_VBMETA_SYSTEM_ALGORITHM := SHA256_RSA2048
 BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
@@ -150,6 +154,7 @@ PRODUCT_PROPERTY_OVERRIDES += ro.control_privapp_permissions=enforce
 MSMSTEPPE = sm6150
 TARGET_DEFINES_DALVIK_HEAP := true
 $(call inherit-product, device/qcom/common/common64.mk)
+$(call inherit-product, packages/services/Car/car_product/build/car.mk)
 
 #Inherit all except heap growth limit from phone-xhdpi-2048-dalvik-heap.mk
 PRODUCT_PROPERTY_OVERRIDES  += \
@@ -165,7 +170,6 @@ PRODUCT_MODEL := $(MSMSTEPPE) for arm64
 
 #Initial bringup flags
 TARGET_USES_AOSP := true
-TARGET_USES_AOSP_FOR_AUDIO := true
 TARGET_USES_QCOM_BSP := false
 TARGET_BOARD_AUTO := true
 TARGET_NO_TELEPHONY := true
@@ -227,41 +231,20 @@ TARGET_DISABLE_QTI_VPP := true
 PRODUCT_PACKAGES += android.hardware.media.omx@1.0-impl
 
 # Audio configuration file
+TARGET_USES_AOSP_FOR_AUDIO := false
+ifeq ($(TARGET_USES_QMAA_OVERRIDE_AUDIO), false)
+ifeq ($(TARGET_USES_QMAA),true)
+AUDIO_USE_STUB_HAL := true
+TARGET_USES_AOSP_FOR_AUDIO := true
+-include $(TOPDIR)vendor/qcom/opensource/audio-hal/primary-hal/configs/common/default.mk
+else
+# Audio hal configuration file
 -include $(TOPDIR)vendor/qcom/opensource/audio-hal/primary-hal/configs/msmsteppe/msmsteppe.mk
-
-#Audio DLKM
-AUDIO_DLKM := audio_apr.ko
-AUDIO_DLKM += audio_snd_event.ko
-AUDIO_DLKM += audio_wglink.ko
-AUDIO_DLKM += audio_q6_pdr.ko
-AUDIO_DLKM += audio_q6_notifier.ko
-AUDIO_DLKM += audio_adsp_loader.ko
-AUDIO_DLKM += audio_q6.ko
-AUDIO_DLKM += audio_usf.ko
-AUDIO_DLKM += audio_pinctrl_wcd.ko
-AUDIO_DLKM += audio_swr.ko
-AUDIO_DLKM += audio_wcd_core.ko
-AUDIO_DLKM += audio_swr_ctrl.ko
-AUDIO_DLKM += audio_wsa881x.ko
-AUDIO_DLKM += audio_platform.ko
-AUDIO_DLKM += audio_hdmi.ko
-AUDIO_DLKM += audio_stub.ko
-AUDIO_DLKM += audio_wcd9xxx.ko
-AUDIO_DLKM += audio_mbhc.ko
-AUDIO_DLKM += audio_wcd_spi.ko
-AUDIO_DLKM += audio_native.ko
-AUDIO_DLKM += audio_machine_talos.ko
-AUDIO_DLKM += audio_wcd934x.ko
-AUDIO_DLKM += audio_pinctrl_lpi.ko
-AUDIO_DLKM += audio_wcd937x.ko
-AUDIO_DLKM += audio_wcd937x_slave.ko
-AUDIO_DLKM += audio_bolero_cdc.ko
-AUDIO_DLKM += audio_wsa_macro.ko
-AUDIO_DLKM += audio_va_macro.ko
-AUDIO_DLKM += audio_rx_macro.ko
-AUDIO_DLKM += audio_tx_macro.ko
-
-PRODUCT_PACKAGES += $(AUDIO_DLKM)
+endif
+else
+# Audio hal configuration file
+-include $(TOPDIR)vendor/qcom/opensource/audio-hal/primary-hal/configs/msmsteppe/msmsteppe.mk
+endif
 
 PRODUCT_PACKAGES += fs_config_files
 
@@ -379,6 +362,9 @@ ifneq ($(GENERIC_ODM_IMAGE),true)
 else
    ODM_MANIFEST_FILES += device/qcom/$(MSMSTEPPE)/manifest-generic.xml
 endif
+
+PRODUCT_PACKAGES += android.hardware.health@2.1-service \
+		android.hardware.health@2.1-impl
 
 ###################################################################################
 # This is the End of target.mk file.

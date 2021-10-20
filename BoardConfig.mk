@@ -3,7 +3,7 @@
 # Product-specific compile-time definitions.
 #
 TARGET_BOARD_PLATFORM := $(MSMSTEPPE)
-TARGET_SEPOLICY_DIR := msmsteppe
+TARGET_SEPOLICY_DIR := gen3_metal
 TARGET_BOOTLOADER_BOARD_NAME := $(MSMSTEPPE)
 TARGET_PERF_DIR := msmsteppe
 
@@ -52,6 +52,7 @@ endif
 BOARD_MKBOOTIMG_ARGS := --header_version $(BOARD_BOOTIMG_HEADER_VERSION)
 
 BOARD_USES_METADATA_PARTITION := true
+BOARD_METADATAIMAGE_PARTITION_SIZE := 16777216
 
 ifeq ($(ENABLE_AB), true)
 # Defines for enabling A/B builds
@@ -120,9 +121,15 @@ else
         # Enable DTBO for recovery image
         BOARD_INCLUDE_RECOVERY_DTBO := true
     endif
+TARGET_COPY_OUT_SYSTEM_EXT := system_ext
+BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := ext4
+TARGET_COPY_OUT_PRODUCT := product
+BOARD_USES_PRODUCTIMAGE := true
+BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_SUPER_PARTITION_GROUPS := qti_dynamic_partitions
 BOARD_QTI_DYNAMIC_PARTITIONS_SIZE := 6438256640
-BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := system vendor
+#BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := system vendor
+BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := system vendor system_ext product
 BOARD_EXT4_SHARE_DUP_BLOCKS := true
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 0x06000000
 endif
@@ -217,7 +224,7 @@ BOARD_VENDOR_KERNEL_MODULES += $(shell ls $(KERNEL_MODULES_OUT)/*.ko)
 TARGET_USES_ION := true
 TARGET_USES_NEW_ION_API :=true
 TARGET_USES_QCOM_BSP := false
-BOARD_KERNEL_CMDLINE := console=ttyMSM0,115200n8 androidboot.hardware=qcom androidboot.console=ttyMSM0 androidboot.memcg=1 lpm_levels.sleep_disabled=1 video=vfb:640x400,bpp=32,memsize=3072000 msm_rtb.filter=0x237 service_locator.enable=1 swiotlb=1 androidboot.usbcontroller=a600000.dwc3 earlycon=msm_geni_serial,0x880000 loop.max_part=7
+BOARD_KERNEL_CMDLINE := console=ttyMSM0,115200n8 androidboot.hardware=qcom androidboot.console=ttyMSM0 androidboot.memcg=1 lpm_levels.sleep_disabled=1 video=vfb:640x400,bpp=32,memsize=3072000 msm_rtb.filter=0x237 service_locator.enable=1 swiotlb=1 androidboot.usbcontroller=a600000.dwc3 earlycon=msm_geni_serial,0x880000 loop.max_part=7 androidboot.selinux=permissive
 
 BOARD_EGL_CFG := device/qcom/$(TARGET_BOARD_PLATFORM)/egl.cfg
 
@@ -238,7 +245,6 @@ $(shell ln $(KERN_PATH)gen_headers_arm_auto.bp $(KERN_PATH)gen_headers_arm.bp)
 
 MAX_EGL_CACHE_KEY_SIZE := 12*1024
 MAX_EGL_CACHE_SIZE := 2048*1024
-
 
 BOARD_USES_GENERIC_AUDIO := true
 BOARD_QTI_CAMERA_32BIT_ONLY := true
@@ -318,3 +324,4 @@ BUILD_BROKEN_USES_BUILD_COPY_HEADERS := true
 -include vendor/qcom/defs/board-defs/system/*.mk
 -include vendor/qcom/defs/board-defs/vendor/*.mk
 #################################################################################
+include device/qcom/sepolicy_vndr/SEPolicy.mk
