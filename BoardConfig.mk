@@ -164,13 +164,13 @@ BOARD_PREBUILT_DTBOIMAGE := out/target/product/sm6150/prebuilt_dtbo.img
 #----------------------------------------------------------------------
 ifeq ($(KERNEL_DEFCONFIG),)
     ifeq ($(TARGET_BUILD_VARIANT),user)
-        KERNEL_DEFCONFIG := vendor/sm6150-qgki_defconfig
+        KERNEL_DEFCONFIG := vendor/sdmsteppeauto-qgki_defconfig
     else
-        KERNEL_DEFCONFIG := vendor/sm6150-qgki-debug_defconfig
+        KERNEL_DEFCONFIG := vendor/sdmsteppeauto-qgki-debug_defconfig
     endif
 endif
 
-ifeq "$(KERNEL_DEFCONFIG)" "vendor/$(TARGET_BOARD_PLATFORM)-qgki_defconfig"
+ifeq "$(KERNEL_DEFCONFIG)" "vendor/sdmsteppeauto-qgki_defconfig"
 BOARD_KERNEL_BINARIES := kernel kernel-gki
 endif
 
