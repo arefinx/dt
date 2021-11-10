@@ -108,3 +108,10 @@ include vendor/qcom/opensource/core-utils/build/AndroidBoardCommon.mk
 ifeq ($(strip $(BOARD_HAS_QCOM_WLAN)),true)
 include device/qcom/wlan/talos/AndroidBoardWlan.mk
 endif
+
+#----------------------------------------------------------------------
+# override default make with prebuilt make path (if any)
+#----------------------------------------------------------------------
+ifneq (, $(wildcard $(shell pwd)/prebuilts/build-tools/linux-x86/bin/make))
+    MAKE := $(shell pwd)/prebuilts/build-tools/linux-x86/bin/$(MAKE)
+endif
