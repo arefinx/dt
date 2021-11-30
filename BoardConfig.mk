@@ -3,7 +3,7 @@
 # Product-specific compile-time definitions.
 #
 TARGET_BOARD_PLATFORM := $(MSMSTEPPE)
-TARGET_SEPOLICY_DIR := gen3_metal
+TARGET_SEPOLICY_DIR := msmsteppe
 TARGET_BOOTLOADER_BOARD_NAME := $(MSMSTEPPE)
 TARGET_PERF_DIR := msmsteppe
 
