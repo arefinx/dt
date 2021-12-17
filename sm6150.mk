@@ -42,6 +42,7 @@ TARGET_USES_QMAA_OVERRIDE_VPP     := false
 TARGET_USES_QMAA_OVERRIDE_GP      := false
 TARGET_USES_QMAA_OVERRIDE_SPCOM_UTEST := false
 TARGET_USES_QMAA_OVERRIDE_PERF    := true
+TARGET_USES_QMAA_OVERRIDE_SENSORS := true
 
 #Full QMAA HAL List
 QMAA_HAL_LIST :=
@@ -121,6 +122,8 @@ ifeq ($(ENABLE_VIRTUAL_AB), true)
     $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
 endif
 
+$(call inherit-product, $(SRC_TARGET_DIR)/product/emulated_storage.mk)
+
 ifneq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
 # Enable chain partition for system, to facilitate system-only OTA in Treble.
 BOARD_AVB_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
@@ -183,7 +186,7 @@ BOARD_HAVE_QCOM_FM := false
 BOARD_VENDOR_QCOM_LOC_PDK_FEATURE_SET := false
 TARGET_USES_AOSP_FOR_WLAN := false
 ALLOW_MISSING_DEPENDENCIES := true
-BOARD_USES_DPM := false
+BOARD_USES_DPM := true
 
 ifeq ($(TARGET_FWK_SUPPORTS_FULL_VALUEADDS),true)
   $(warning "Compiling with full value-added framework")
@@ -222,9 +225,10 @@ PRODUCT_PACKAGES += libGLES_android
 
 
 PRODUCT_BOOT_JARS += tcmiface
+PRODUCT_BOOT_JARS += telephony-ext
+PRODUCT_PACKAGES += telephony-ext
 
-TARGET_ENABLE_QC_AV_ENHANCEMENTS := false
-TARGET_FWK_SUPPORTS_AV_VALUEADDS := false
+TARGET_ENABLE_QC_AV_ENHANCEMENTS := true
 
 TARGET_DISABLE_QTI_VPP := true
 
@@ -237,6 +241,9 @@ ifeq ($(TARGET_USES_QMAA),true)
 AUDIO_USE_STUB_HAL := true
 TARGET_USES_AOSP_FOR_AUDIO := true
 -include $(TOPDIR)vendor/qcom/opensource/audio-hal/primary-hal/configs/common/default.mk
+# enable sound trigger hidl hal 2.1
+PRODUCT_PACKAGES += \
+    android.hardware.soundtrigger@2.1-impl
 else
 # Audio hal configuration file
 -include $(TOPDIR)vendor/qcom/opensource/audio-hal/primary-hal/configs/msmsteppe/msmsteppe.mk
