@@ -10,18 +10,18 @@ TARGET_USES_QMAA := true
 #true means overriding global QMAA for this tech area
 #false means using global, no override
 TARGET_USES_QMAA_OVERRIDE_RPMB    := false
-TARGET_USES_QMAA_OVERRIDE_DISPLAY := false
-TARGET_USES_QMAA_OVERRIDE_AUDIO   := false
+TARGET_USES_QMAA_OVERRIDE_DISPLAY := true
+TARGET_USES_QMAA_OVERRIDE_AUDIO   := true
 TARGET_USES_QMAA_OVERRIDE_VIDEO   := false
 TARGET_USES_QMAA_OVERRIDE_CAMERA  := false
-TARGET_USES_QMAA_OVERRIDE_GFX     := false
-TARGET_USES_QMAA_OVERRIDE_WFD     := false
-TARGET_USES_QMAA_OVERRIDE_GPS     := false
+TARGET_USES_QMAA_OVERRIDE_GFX     := true
+TARGET_USES_QMAA_OVERRIDE_WFD     := true
+TARGET_USES_QMAA_OVERRIDE_GPS     := true
 TARGET_USES_QMAA_OVERRIDE_ANDROID_RECOVERY := true
 TARGET_USES_QMAA_OVERRIDE_ANDROID_CORE := true
 TARGET_USES_QMAA_OVERRIDE_WLAN    := true
-TARGET_USES_QMAA_OVERRIDE_DPM     := false
-TARGET_USES_QMAA_OVERRIDE_BLUETOOTH := false
+TARGET_USES_QMAA_OVERRIDE_DPM     := true
+TARGET_USES_QMAA_OVERRIDE_BLUETOOTH := true
 TARGET_USES_QMAA_OVERRIDE_FM      := false
 TARGET_USES_QMAA_OVERRIDE_CVP     := false
 TARGET_USES_QMAA_OVERRIDE_FASTCV  := false
@@ -29,22 +29,22 @@ TARGET_USES_QMAA_OVERRIDE_SCVE    := false
 TARGET_USES_QMAA_OVERRIDE_OPENVX  := false
 TARGET_USES_QMAA_OVERRIDE_DIAG    := true
 TARGET_USES_QMAA_OVERRIDE_FTM     := false
-TARGET_USES_QMAA_OVERRIDE_DATA    := false
-TARGET_USES_QMAA_OVERRIDE_DATA_NET := false
+TARGET_USES_QMAA_OVERRIDE_DATA    := true
+TARGET_USES_QMAA_OVERRIDE_DATA_NET := true
 TARGET_USES_QMAA_OVERRIDE_MSM_BUS_MODULE := true
-TARGET_USES_QMAA_OVERRIDE_KERNEL_TESTS_INTERNAL := true
+TARGET_USES_QMAA_OVERRIDE_KERNEL_TESTS_INTERNAL := false
 TARGET_USES_QMAA_OVERRIDE_MSMIRQBALANCE := false
-TARGET_USES_QMAA_OVERRIDE_VIBRATOR := false
-TARGET_USES_QMAA_OVERRIDE_DRM     := false
+TARGET_USES_QMAA_OVERRIDE_VIBRATOR := true
+TARGET_USES_QMAA_OVERRIDE_DRM     := true
 TARGET_USES_QMAA_OVERRIDE_KMGK    := false
-#TARGET_USES_QMAA_OVERRIDE_CRYPTFSHW := false
+TARGET_USES_QMAA_OVERRIDE_CRYPTFSHW := true
 TARGET_USES_QMAA_OVERRIDE_VPP     := false
 TARGET_USES_QMAA_OVERRIDE_GP      := false
 TARGET_USES_QMAA_OVERRIDE_SPCOM_UTEST := false
 TARGET_USES_QMAA_OVERRIDE_PERF    := true
 
 #Full QMAA HAL List
-QMAA_HAL_LIST := audio video camera display sensors gps
+QMAA_HAL_LIST :=
 
 ###########
 #QMAA flags ends
@@ -69,6 +69,9 @@ endif
 PRODUCT_BUILD_RAMDISK_IMAGE := true
 PRODUCT_BUILD_USERDATA_IMAGE := true
 
+# Enable debugfs restrictions
+PRODUCT_SET_DEBUGFS_RESTRICTIONS := true
+
 # Also, since we're going to skip building the system image, we also skip
 # building the OTA package. We'll build this at a later step. We also don't
 # need to build the OTA tools package (we'll use the one from the system build).
@@ -78,8 +81,9 @@ TARGET_SKIP_OTATOOLS_PACKAGE := true
 # Enable AVB 2.0
 BOARD_AVB_ENABLE := true
 
-# By default this target is ota config, so set the default shipping level to 28 (if not set explictly earlier)
-SHIPPING_API_LEVEL := 30
+# By default this target is ota config, so set the default shipping level to 31 (if not set explictly earlier)
+SHIPPING_API_LEVEL := 31
+PRODUCT_SHIPPING_API_LEVEL := 31
 
 # Enable virtual-ab by default
 ENABLE_VIRTUAL_AB := true
@@ -154,7 +158,6 @@ PRODUCT_PROPERTY_OVERRIDES += ro.control_privapp_permissions=enforce
 MSMSTEPPE = sm6150
 TARGET_DEFINES_DALVIK_HEAP := true
 $(call inherit-product, device/qcom/common/common64.mk)
-$(call inherit-product, packages/services/Car/car_product/build/car.mk)
 
 #Inherit all except heap growth limit from phone-xhdpi-2048-dalvik-heap.mk
 PRODUCT_PROPERTY_OVERRIDES  += \
@@ -169,10 +172,8 @@ PRODUCT_BRAND := qti
 PRODUCT_MODEL := $(MSMSTEPPE) for arm64
 
 #Initial bringup flags
-TARGET_USES_AOSP := true
+TARGET_USES_AOSP := false
 TARGET_USES_QCOM_BSP := false
-TARGET_BOARD_AUTO := true
-TARGET_NO_TELEPHONY := true
 TARGET_USES_QTIC := false
 TARGET_USES_QTIC_EXTENSION := false
 ENABLE_HYP := false
@@ -180,8 +181,7 @@ BOARD_HAS_QCOM_WLAN := true
 TARGET_NO_QTI_WFD := true
 BOARD_HAVE_QCOM_FM := false
 BOARD_VENDOR_QCOM_LOC_PDK_FEATURE_SET := false
-TARGET_USES_AOSP_FOR_WLAN := true
-TARGET_FWK_SUPPORTS_FULL_VALUEADDS := false
+TARGET_USES_AOSP_FOR_WLAN := false
 ALLOW_MISSING_DEPENDENCIES := true
 BOARD_USES_DPM := false
 
@@ -332,6 +332,8 @@ PRODUCT_VENDOR_MOVE_ENABLED := true
 # Enable flag to support slow devices
 TARGET_PRESIL_SLOW_BOARD := true
 
+#add vndservicemanager
+PRODUCT_PACKAGES += vndservicemanager
 
 #----------------------------------------------------------------------
 # wlan specific

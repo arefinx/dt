@@ -3,7 +3,7 @@
 # Product-specific compile-time definitions.
 #
 TARGET_BOARD_PLATFORM := $(MSMSTEPPE)
-TARGET_SEPOLICY_DIR := gen3_metal
+TARGET_SEPOLICY_DIR := msmsteppe
 TARGET_BOOTLOADER_BOARD_NAME := $(MSMSTEPPE)
 TARGET_PERF_DIR := msmsteppe
 
@@ -239,9 +239,6 @@ TARGET_KERNEL_CROSS_COMPILE_PREFIX := $(shell pwd)/prebuilts/gcc/linux-x86/aarch
 TARGET_USES_UNCOMPRESSED_KERNEL := false
 
 KERN_PATH := kernel/msm-5.4/
-$(shell rm $(KERN_PATH)gen_headers_arm64.bp $(KERN_PATH)gen_headers_arm.bp)
-$(shell ln $(KERN_PATH)gen_headers_arm64_auto.bp $(KERN_PATH)gen_headers_arm64.bp)
-$(shell ln $(KERN_PATH)gen_headers_arm_auto.bp $(KERN_PATH)gen_headers_arm.bp)
 
 MAX_EGL_CACHE_KEY_SIZE := 12*1024
 MAX_EGL_CACHE_SIZE := 2048*1024
