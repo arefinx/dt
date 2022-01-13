@@ -1,4 +1,5 @@
 # Copyright (c) 2013-2018,2020, The Linux Foundation. All rights reserved.
+# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -46,11 +47,14 @@ on init
     write /sys/module/qpnp_rtc/parameters/poweron_alarm 1
     wait /dev/block/platform/soc/${ro.boot.bootdevice}
     symlink /dev/block/platform/soc/${ro.boot.bootdevice} /dev/block/bootdevice
+    start vendor.qseecomd
+    start keymaster-4-0
 
 on early-fs
     start vold
 
 on fs
+    start hwservicemanager
     mount_all --early
     chown root system /mnt/vendor/persist
     chmod 0771 /mnt/vendor/persist
@@ -178,6 +182,27 @@ service spdaemon /vendor/bin/spdaemon
     class core
     user system
     group system
+
+#
+#service qrngd /system/bin/qrngd -f
+#   class main
+#   user root
+#   group root
+#
+#service qrngp /system/bin/qrngp
+#    class main
+#    user root
+#    group root
+#    oneshot
+#    disabled
+#
+#on property:sys.boot_completed=1
+#    start qrngp
+#
+service vendor.qseecomd /vendor/bin/qseecomd
+   class core
+   user root
+   group root
 
 #service qosmgrd /system/bin/qosmgr /system/etc/qosmgr_rules.xml
 #   user system
