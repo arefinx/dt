@@ -9,7 +9,7 @@ TARGET_USES_QMAA := true
 #QMAA tech team flag to override global QMAA per tech team
 #true means overriding global QMAA for this tech area
 #false means using global, no override
-TARGET_USES_QMAA_OVERRIDE_RPMB    := false
+TARGET_USES_QMAA_OVERRIDE_RPMB    := true
 TARGET_USES_QMAA_OVERRIDE_DISPLAY := true
 TARGET_USES_QMAA_OVERRIDE_AUDIO   := true
 TARGET_USES_QMAA_OVERRIDE_VIDEO   := false
@@ -43,6 +43,7 @@ TARGET_USES_QMAA_OVERRIDE_GP      := false
 TARGET_USES_QMAA_OVERRIDE_SPCOM_UTEST := false
 TARGET_USES_QMAA_OVERRIDE_PERF    := true
 TARGET_USES_QMAA_OVERRIDE_SENSORS := true
+TARGET_USES_QMAA_OVERRIDE_SMCINVOKE := true
 
 #Full QMAA HAL List
 QMAA_HAL_LIST :=
@@ -117,6 +118,9 @@ ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),29))
       POSTINSTALL_OPTIONAL_vendor=true
  endif
 endif
+
+PRODUCT_COPY_FILES += \
+    device/qcom/sm6150/init.qti.qseecomd.sh:$(TARGET_COPY_OUT_VENDOR)/bin/init.qti.qseecomd.sh
 
 ifeq ($(ENABLE_VIRTUAL_AB), true)
     $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
