@@ -166,6 +166,7 @@ PRODUCT_PROPERTY_OVERRIDES += ro.control_privapp_permissions=enforce
 
 #target name, shall be used in all makefiles
 MSMSTEPPE = sm6150
+TARGET_BOARD_PLATFORM := $(MSMSTEPPE)
 TARGET_DEFINES_DALVIK_HEAP := true
 $(call inherit-product, device/qcom/common/common64.mk)
 
