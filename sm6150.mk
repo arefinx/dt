@@ -99,6 +99,9 @@ else ifeq ($(SHIPPING_API_LEVEL),28)
   $(call inherit-product, build/make/target/product/product_launched_with_p.mk)
 endif
 
+# diag-router
+TARGET_HAS_DIAG_ROUTER := true
+
 ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),29))
  # f2fs utilities
  PRODUCT_PACKAGES += \
