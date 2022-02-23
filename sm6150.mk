@@ -77,8 +77,8 @@ PRODUCT_SET_DEBUGFS_RESTRICTIONS := true
 # Also, since we're going to skip building the system image, we also skip
 # building the OTA package. We'll build this at a later step. We also don't
 # need to build the OTA tools package (we'll use the one from the system build).
-TARGET_SKIP_OTA_PACKAGE := true
-TARGET_SKIP_OTATOOLS_PACKAGE := true
+#TARGET_SKIP_OTA_PACKAGE := true
+#TARGET_SKIP_OTATOOLS_PACKAGE := true
 
 # Enable AVB 2.0
 BOARD_AVB_ENABLE := true
@@ -98,6 +98,9 @@ else ifeq ($(SHIPPING_API_LEVEL),28)
   BOARD_DYNAMIC_PARTITION_ENABLE := false
   $(call inherit-product, build/make/target/product/product_launched_with_p.mk)
 endif
+
+# diag-router
+TARGET_HAS_DIAG_ROUTER := true
 
 ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),29))
  # f2fs utilities
@@ -163,6 +166,7 @@ PRODUCT_PROPERTY_OVERRIDES += ro.control_privapp_permissions=enforce
 
 #target name, shall be used in all makefiles
 MSMSTEPPE = sm6150
+TARGET_BOARD_PLATFORM := $(MSMSTEPPE)
 TARGET_DEFINES_DALVIK_HEAP := true
 $(call inherit-product, device/qcom/common/common64.mk)
 
