@@ -90,6 +90,9 @@ PRODUCT_SHIPPING_API_LEVEL := 31
 # Enable virtual-ab by default
 ENABLE_VIRTUAL_AB := true
 
+# Flag to enable Hibernation restore from ABL
+TARGET_HIBERNATION_INSECURE_ENABLE := true
+
 # Enable Dynamic partitions only for Q new launch devices.
 ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),29))
   BOARD_DYNAMIC_PARTITION_ENABLE := true
