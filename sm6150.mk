@@ -90,6 +90,9 @@ PRODUCT_SHIPPING_API_LEVEL := 31
 # Enable virtual-ab by default
 ENABLE_VIRTUAL_AB := true
 
+# Flag to enable Hibernate
+TARGET_SUPPORTS_S2D := true
+
 # Flag to enable Hibernation restore from ABL
 TARGET_HIBERNATION_INSECURE_ENABLE := true
 
@@ -287,7 +290,8 @@ DEVICE_MANIFEST_FILE := device/qcom/$(MSMSTEPPE)/manifest.xml
 DEVICE_MATRIX_FILE := device/qcom/common/compatibility_matrix.xml
 DEVICE_FRAMEWORK_MANIFEST_FILE := device/qcom/$(MSMSTEPPE)/framework_manifest.xml
 DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += \
-    vendor/qcom/opensource/core-utils/vendor_framework_compatibility_matrix.xml
+    vendor/qcom/opensource/core-utils/vendor_framework_compatibility_matrix.xml \
+	device/qcom/$(MSMSTEPPE)/vendor_framework_compatibility_matrix.xml
 
 #Healthd packages
 PRODUCT_PACKAGES += \
