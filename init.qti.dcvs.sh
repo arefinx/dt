@@ -32,24 +32,23 @@
         #Enable mem_latency governor for L3, LLCC, and DDR scaling
         for memlat in $device/*cpu*-lat/devfreq/*cpu*-lat
         do
-            echo "mem_latency" > $memlat/governor
+            cat $memlat/available_frequencies | cut -d " " -f 1 > $memlat/min_freq
             echo 10 > $memlat/polling_interval
             echo 400 > $memlat/mem_latency/ratio_ceil
          done
 
          #Gold L3 ratio ceil
-         echo 4000 > /sys/class/devfreq/soc:qcom,cpu6-cpu-l3-lat/mem_latency/ratio_ceil
-
-         #Enable cdspl3 governor for L3 cdsp nodes
-         for l3cdsp in $device/*cdsp-cdsp-l3-lat/devfreq/*cdsp-cdsp-l3-lat
-         do
-             echo "cdspl3" > $l3cdsp/governor
-         done
+        for l3gold in $device/*cpu6-cpu-l3-lat/devfreq/*cpu6-cpu-l3-lat
+        do
+            echo 4000 > $l3gold/mem_latency/ratio_ceil
+            echo 25000 > $l3gold/mem_latency/wb_filter_ratio
+            echo 60 > $l3gold/mem_latency/wb_pct_thres
+        done
 
         #Enable compute governor for gold latfloor
         for latfloor in $device/*cpu*-ddr-latfloor*/devfreq/*cpu-ddr-latfloor*
         do
-            echo "compute" > $latfloor/governor
+            cat $latfloor/available_frequencies | cut -d " " -f 1 > $latfloor/min_freq
             echo 10 > $latfloor/polling_interval
         done
     done;
