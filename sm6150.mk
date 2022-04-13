@@ -93,9 +93,6 @@ ENABLE_VIRTUAL_AB := true
 # Flag to enable Hibernation restore from ABL
 TARGET_HIBERNATION_INSECURE_ENABLE := true
 
-# Enable GMS
-$(call inherit-product, vendor/partner_gms/products/gms.mk)
-
 # Enable Dynamic partitions only for Q new launch devices.
 ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),29))
   BOARD_DYNAMIC_PARTITION_ENABLE := true
