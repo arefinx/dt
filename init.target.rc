@@ -49,7 +49,6 @@ on init
     wait /dev/block/platform/soc/${ro.boot.bootdevice}
     symlink /dev/block/platform/soc/${ro.boot.bootdevice} /dev/block/bootdevice
     start vendor.qseecomd
-    start keymaster-4-0
 
 on early-fs
     start vold
@@ -69,8 +68,8 @@ on post-fs
 
 on late-fs
     wait_for_prop hwservicemanager.ready true
-    exec_start wait_for_keymaster
     mount_all --late
+    exec_start wait_for_keymaster
 
 service sec_nvm /vendor/bin/sec_nvm
     class core
