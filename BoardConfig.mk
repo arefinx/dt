@@ -173,9 +173,8 @@ ifeq ($(KERNEL_DEFCONFIG),)
     endif
 endif
 
-ifeq "$(KERNEL_DEFCONFIG)" "vendor/$(TARGET_BOARD_PLATFORM)-qgki_defconfig"
-BOARD_KERNEL_BINARIES := kernel kernel-gki
-endif
+GKI_KERNEL := 0
+TARGET_USES_UNCOMPRESSED_KERNEL := 1
 
 ifeq (,$(findstring -qgki-debug_defconfig,$(KERNEL_DEFCONFIG)))
 $(warning #### GKI config ####)
