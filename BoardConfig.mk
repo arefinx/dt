@@ -21,6 +21,9 @@ TARGET_2ND_CPU_VARIANT := cortex-a9
 
 BOARD_SECCOMP_POLICY := device/qcom/$(TARGET_BOARD_PLATFORM)/seccomp
 
+# Disable Telephony for IOT targets
+TARGET_NO_TELEPHONY := true
+
 TARGET_NO_BOOTLOADER := false
 TARGET_USES_UEFI := true
 TARGET_NO_KERNEL := false
