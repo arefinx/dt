@@ -21,6 +21,9 @@ TARGET_2ND_CPU_VARIANT := cortex-a9
 
 BOARD_SECCOMP_POLICY := device/qcom/$(TARGET_BOARD_PLATFORM)/seccomp
 
+# Disable Telephony for IOT targets
+TARGET_NO_TELEPHONY := true
+
 TARGET_NO_BOOTLOADER := false
 TARGET_USES_UEFI := true
 TARGET_NO_KERNEL := false
@@ -170,9 +173,8 @@ ifeq ($(KERNEL_DEFCONFIG),)
     endif
 endif
 
-ifeq "$(KERNEL_DEFCONFIG)" "vendor/$(TARGET_BOARD_PLATFORM)-qgki_defconfig"
-BOARD_KERNEL_BINARIES := kernel kernel-gki
-endif
+GKI_KERNEL := 0
+TARGET_USES_UNCOMPRESSED_KERNEL := 1
 
 ifeq (,$(findstring -qgki-debug_defconfig,$(KERNEL_DEFCONFIG)))
 $(warning #### GKI config ####)
