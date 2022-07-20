@@ -710,4 +710,18 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <instance>embmsslServer0</instance>
         </interface>
     </hal>
+    <!-- Power State HAL -->
+    <hal format="hidl">
+        <name>vendor.qti.hardware.powerstateservice</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+                <name>IPowerStateService</name>
+                <instance>default</instance>
+        </interface>
+        <interface>
+                <name>IPowerStateUtility</name>
+                <instance>default</instance>
+        </interface>
+    </hal>
 </manifest>
